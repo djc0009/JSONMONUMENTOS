@@ -7,8 +7,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 
 public class MainActivity extends AppCompatActivity {
+
+    RecyclerView rvMonumentos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +28,43 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        rvMonumentos = findViewById(R.id.rvMonumentos);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://10.0.2.2:8000/monumentos";
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        ArrayList<Monumento> arrayMonumentos = new ArrayList<>();
+
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                String nombre = jsonObject.getString("nombre");
+                                String ubicacion = jsonObject.getString("ciudad");
+                                String descripcion = jsonObject.getString("descripcion");
+                                String imagen = jsonObject.getString("imagen");
+
+                                Monumento monumento = new Monumento(nombre, ubicacion, descripcion, imagen);
+                                arrayMonumentos.add(monumento);
+                            }
+
+                            rvMonumentos.setHasFixedSize(true);
+
+                            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                            rvMonumentos.setLayoutManager(layoutManager);
+
+                            AdaptadorMonumentos adaptadorMonumentos = new AdaptadorMonumentos(MainActivity.this, arrayMonumentos);
+                            rvMonumentos.setAdapter(adaptadorMonumentos);
+                            adaptadorMonumentos.refrescar();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
     }
 }

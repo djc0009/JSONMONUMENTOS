@@ -1,5 +1,6 @@
 package com.example.jsonmonumentos;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -60,9 +61,9 @@ public class AdaptadorMonumentos extends RecyclerView.Adapter<AdaptadorMonumento
         holder.tvUbicacion.setText(ubicacion);
         holder.tvDescripcion.setText(descripcion);
 
-        Glide.with(holder.itemView.getContext())
-                .load(imagen)
-                .into(holder.imagenMonumento);
+//        Glide.with(holder.itemView.getContext())
+//                .load(imagen)
+//                .into(holder.imagenMonumento);
 
         if (position % 2 == 0) {
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.color1));
